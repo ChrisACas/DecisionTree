@@ -51,26 +51,35 @@ def main():
     train_training_features, prediction_training_features, train_training_label, prediction_training_label  = \
         train_test_split(training_feature_cols, training_label_col, test_size=0.2, random_state=1) 
 
-    # test_data_cols = testing_df[training_feature_list]
-    
-    for tree_depth in range(2, 11): 
-        decisiontree = build_decision_tree(train_training_features, train_training_label, tree_depth)
-        prediction = decisiontree.predict(prediction_training_features)
-        accuracy = metrics.accuracy_score(prediction_training_label, prediction)
-        print("Accuracy of Decision Tree with Depth ", tree_depth, ": ", accuracy*100)
+    # determine best depth with training set only. 
+    for tree_depth in range(2, 13): 
+        decisiontree = build_decision_tree(training_feature_cols, training_label_col, tree_depth)
+        prediction = decisiontree.predict(training_feature_cols)
+        accuracy = metrics.accuracy_score(training_label_col, prediction)
+        print("Accuracy of Decision Tree built with training set having depth ", tree_depth, ": ", accuracy*100)
 
-    # tree with default depth
-    decisiontree = build_decision_tree(train_training_features, train_training_label)
-    prediction = decisiontree.predict(prediction_training_features)
-    accuracy = metrics.accuracy_score(prediction_training_label, prediction)
-    print("Accuracy of Decision Tree with Depth ", decisiontree.get_depth(), ": ", accuracy*100)
+    # Training Set accuracy only. Sci-kit learn determined dpeth
+    decisiontree = build_decision_tree(training_feature_cols, training_label_col)
+    prediction = decisiontree.predict(training_feature_cols)
+    accuracy = metrics.accuracy_score(training_label_col, prediction)
+    print("Accuracy of Decision Tree built with training set having depth ", decisiontree.get_depth(), ": ", accuracy*100)
 
-    # use entire training dataset to build tree before testing accuracy with testing set
-    print("Optimal Depth has been found to be 9")
-    decisiontree = build_decision_tree(training_feature_cols, training_label_col, 9)
+    # Testing Set prediction accuracy with skleanr specific depth
+    decisiontree = build_decision_tree(training_feature_cols, training_label_col)
     prediction = decisiontree.predict(testing_feature_cols)
     accuracy = metrics.accuracy_score(testing_label_col, prediction)
-    print("Accuracy of Decision Tree with Depth ", decisiontree.get_depth(), ": ", accuracy*100)
+    print("\nDecision Tree with Sci-kit Learns determination of best fit depth")
+    print("Accuracy of classification with Test Data having depth ", decisiontree.get_depth(), ": ", accuracy*100)
+
+    print("\nOptimal Depth has been found to be 10")
+
+    # Testing Dataset prediction accuracy with found best depth
+    decisiontree = build_decision_tree(training_feature_cols, training_label_col, 10)
+    prediction = decisiontree.predict(testing_feature_cols)
+    accuracy = metrics.accuracy_score(testing_label_col, prediction)
+    print("\nDecision Tree with predetermined best depth")
+    print("Accuracy of classification with Test Data having depth of ", decisiontree.get_depth(), ": ", accuracy*100)
+
 
     display_tree(decisiontree,feature_list, 'label')
     
