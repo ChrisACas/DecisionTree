@@ -15,12 +15,14 @@ def get_label(dataframe):
     num_columns = ImportData.num_columns(dataframe)-1
     return list(dataframe.columns.values)[num_columns]
 
-def build_decision_tree(attributes, label, max_depth):
+def build_decision_tree(attributes, label, max_depth=None):
     return DecisionTreeClassifier(max_depth=max_depth).fit(attributes, label)
 
 def label_encode(dataframe):
     return dataframe.apply(prep.LabelEncoder().fit_transform)
 
+def get_tree_depth(tree): 
+    return tree.get_depth
 
 def main():
     training_df = label_encode(ImportData.get_training_set())
@@ -31,19 +33,26 @@ def main():
     training_feature_list = get_attributes(training_df)
     training_feature_cols = training_df[training_feature_list]
     training_label = training_df.label
-    tree_depth = 3
 
     train_training_features, prediction_training_features, train_training_label, prediction_training_label  = \
         train_test_split(training_feature_cols, training_label, test_size=0.2, random_state=1) 
 
-    test_data_cols = testing_df[training_feature_list]
+    # test_data_cols = testing_df[training_feature_list]
     
 
+    for tree_depth in range(2, 11): 
+        decisiontree = build_decision_tree(train_training_features, train_training_label, tree_depth)
+        prediction = decisiontree.predict(prediction_training_features)
+        accuracy = metrics.accuracy_score(prediction_training_label, prediction)
+        print("Accuracy of Decision Tree with Depth ", tree_depth, ": ", accuracy*100)
 
-    decisiontree = build_decision_tree(train_training_features, train_training_label, tree_depth)
+    # tree with default depth
+    decisiontree = build_decision_tree(train_training_features, train_training_label)
     prediction = decisiontree.predict(prediction_training_features)
     accuracy = metrics.accuracy_score(prediction_training_label, prediction)
-    print(accuracy)
+    print("Accuracy of Decision Tree with Depth ", decisiontree.get_depth(), ": ", accuracy*100)
+
+    # use entire training dataset to build tree before testing accuracy with testing set
     
 
     
