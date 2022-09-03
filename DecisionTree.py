@@ -1,6 +1,7 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
 from sklearn import preprocessing as prep
+from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 import ImportData
@@ -14,25 +15,34 @@ def get_label(dataframe):
     num_columns = ImportData.num_columns(dataframe)-1
     return list(dataframe.columns.values)[num_columns]
 
-def build_decision_tree(attributes, label):
-    return DecisionTreeClassifier().fit(attributes, label)
+def build_decision_tree(attributes, label, max_depth):
+    return DecisionTreeClassifier(max_depth=max_depth).fit(attributes, label)
+
+def label_encode(dataframe):
+    return dataframe.apply(prep.LabelEncoder().fit_transform)
 
 
 def main():
-    training_df = ImportData.get_training_set()
-    testing_df = ImportData.get_testing_set()
-    training_df = training_df.apply(prep.LabelEncoder().fit_transform)
-    testing_df = testing_df.apply(prep.LabelEncoder().fit_transform)
+    training_df = label_encode(ImportData.get_training_set())
+    testing_df = label_encode(ImportData.get_test_set()) 
 
-    attributes_list = get_attributes(training_df)
-    attribute_cols = training_df[attributes_list]
-    test_data_cols = testing_df[attributes_list]
-    label = training_df.label
+    
 
-    decisiontree = build_decision_tree(attribute_cols, label)
-    prediction = decisiontree.predict(test_data_cols)
+    training_feature_list = get_attributes(training_df)
+    training_feature_cols = training_df[training_feature_list]
+    training_label = training_df.label
+    tree_depth = 3
 
-    accuracy = metrics.accuracy_score(testing_df.label, prediction)
+    train_training_features, prediction_training_features, train_training_label, prediction_training_label  = \
+        train_test_split(training_feature_cols, training_label, test_size=0.2, random_state=1) 
+
+    test_data_cols = testing_df[training_feature_list]
+    
+
+
+    decisiontree = build_decision_tree(train_training_features, train_training_label, tree_depth)
+    prediction = decisiontree.predict(prediction_training_features)
+    accuracy = metrics.accuracy_score(prediction_training_label, prediction)
     print(accuracy)
     
 
@@ -40,3 +50,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# #split dataset in features and target variable
+# feature_cols = ['pregnant', 'insulin', 'bmi', 'age','glucose','bp','pedigree']
+# X = pima[feature_cols] # Features
+# y = pima.label # Target variable
+# # Split dataset into training set and test set
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1) # 70% training and 30% test

@@ -27,16 +27,14 @@ def get_training_set():
     col_names_file = "census-income-col_names.txt"
     col_names = import_col_names(col_names_file)
     training_dataframe = import_file(training_filename, col_names)
-    return training_dataframe
+    return training_dataframe.drop(columns='instance weight')
 
-def get_testing_set():
+def get_test_set():
     test_filename = "census-income.test"
     col_names_file = "census-income-col_names.txt"
     col_names = import_col_names(col_names_file)
     testing_dataframe = import_file(test_filename, col_names)
-    return testing_dataframe
-
-
+    return testing_dataframe.drop(columns='instance weight')
 
 def main():
     training_filename = "census-income.data"
