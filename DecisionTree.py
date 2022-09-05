@@ -8,13 +8,13 @@ import numpy as np
 import ImportData
 import matplotlib.pyplot as plt
 
-def display_tree(dtree, attribute_names, label):
+def display_tree(dtree, attribute_names, label, filename="decision_tree"):
     fig = plt.figure(figsize=(25,20), dpi=600)
     tree.plot_tree(dtree, 
                    feature_names=attribute_names,  
                    class_names=label,
                    filled=True)
-    fig.savefig("decision_tree.png")
+    fig.savefig("toy_tree.png")
     
 
 def get_attributes(dataframe):
@@ -34,7 +34,8 @@ def label_encode(dataframe):
 def get_tree_depth(tree): 
     return tree.get_depth
 
-def main():
+
+def census_decision_tree():
     training_df = label_encode(ImportData.get_training_set())
     testing_df = label_encode(ImportData.get_test_set()) 
     
@@ -78,9 +79,24 @@ def main():
     print("\nDecision Tree with predetermined best depth. Model buillt with entire training dataset")
     print("Accuracy of classification with Test Data having depth of ", decisiontree.get_depth(), ": ", accuracy*100)
 
-
-    # display_tree(decisiontree,feature_list, 'label')
     
+    display_tree(decisiontree,feature_list, 'label')
+
+def toy_dataset():
+    toy_df = ImportData.import_file('toy_dataset.csv')
+    
+    feature_list = get_attributes(toy_df)
+    feature_cols = toy_df[feature_list]
+    label_col = toy_df.A
+
+    decisiontree = build_decision_tree(feature_cols, label_col, 1)
+
+    display_tree(decisiontree,feature_list, 'XA')
+    
+
+def main():
+    # census_decision_tree()
+    toy_dataset()    
 
 
 if __name__ == "__main__":

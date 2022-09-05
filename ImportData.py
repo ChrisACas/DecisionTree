@@ -9,8 +9,12 @@ def import_col_names(filename):
 def export_dataframe(dataframe, filename="export.csv"):
     dataframe.head().to_csv(filename)
 
-def import_file(filename, col_names):
+def import_file_col_data(filename, col_names):
     dataframe = pd.read_csv(filename, names=col_names)
+    return dataframe
+
+def import_file(filename):
+    dataframe = pd.read_csv(filename, header=0)
     return dataframe
 
 def print_dataframe(dataframe):
@@ -26,14 +30,14 @@ def get_training_set():
     training_filename = "census-income.data"
     col_names_file = "census-income-col_names.txt"
     col_names = import_col_names(col_names_file)
-    training_dataframe = import_file(training_filename, col_names)
+    training_dataframe = import_file_col_data(training_filename, col_names)
     return training_dataframe.drop(columns='instance weight')
 
 def get_test_set():
     test_filename = "census-income.test"
     col_names_file = "census-income-col_names.txt"
     col_names = import_col_names(col_names_file)
-    testing_dataframe = import_file(test_filename, col_names)
+    testing_dataframe = import_file_col_data(test_filename, col_names)
     return testing_dataframe.drop(columns='instance weight')
 
 def main():
@@ -43,11 +47,11 @@ def main():
     
     col_names = import_col_names(col_names_file)
     
-    training_dataframe = import_file(training_filename, col_names)
+    training_dataframe = import_file_col_data(training_filename, col_names)
     print("Training Rows: ", num_instances(training_dataframe))
     print("Training Columns: ", num_columns(training_dataframe))
 
-    testing_dataframe = import_file(test_filename, col_names)
+    testing_dataframe = import_file_col_data(test_filename, col_names)
     print("Training Rows: ", num_instances(testing_dataframe))
     print("Training Columns: ", num_columns(testing_dataframe))
     
