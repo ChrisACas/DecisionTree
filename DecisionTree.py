@@ -8,13 +8,13 @@ import numpy as np
 import ImportData
 import matplotlib.pyplot as plt
 
-def display_tree(dtree, attribute_names, label, filename="decision_tree"):
+def display_tree(dtree, attribute_names, label, filename="decision_tree.png"):
     fig = plt.figure(figsize=(25,20), dpi=600)
     tree.plot_tree(dtree, 
                    feature_names=attribute_names,  
                    class_names=label,
                    filled=True)
-    fig.savefig("toy_tree.png")
+    fig.savefig(filename)
     
 
 def get_attributes(dataframe):
@@ -80,7 +80,7 @@ def census_decision_tree():
     print("Accuracy of classification with Test Data having depth of ", decisiontree.get_depth(), ": ", accuracy*100)
 
     
-    display_tree(decisiontree,feature_list, 'label')
+    display_tree(decisiontree,feature_list, 'label', "decision_tree.png")
 
 def toy_dataset():
     toy_df = ImportData.import_file('toy_dataset.csv')
@@ -89,13 +89,13 @@ def toy_dataset():
     feature_cols = toy_df[feature_list]
     label_col = toy_df.A
 
-    decisiontree = build_decision_tree(feature_cols, label_col, 1)
+    decisiontree = build_decision_tree(feature_cols, label_col)
 
-    display_tree(decisiontree,feature_list, 'XA')
+    display_tree(decisiontree,feature_list, 'XA', "toy_tree.png")
     
 
 def main():
-    # census_decision_tree()
+    census_decision_tree()
     toy_dataset()    
 
 
